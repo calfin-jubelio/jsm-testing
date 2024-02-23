@@ -3,193 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lampu Kontrol</title>
-    <style>
-        .lampu-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .lampu {
-            width: 30px;
-            height: 30px;
-            background-color: gray;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 5px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .lampu.on {
-            background-color: yellow;
-        }
-
-        .lampu .switch {
-            width: 30px;
-            height: 20px;
-            background-color: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            transform: translate(0%, 50%);
-            transition: transform 0.2s ease;
-        }
-
-        .lampu.on .switch {
-            transform: translate(-50%, -50%) translateX(8px);
-        }
-
-        .group-container {
-            background-color: lightgray;
-            padding: 10px;
-            border: 2px solid black;
-            margin: 10px;
-        }
-
-        .group-header {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        button {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .keluarga-group {
-            background-color: red;
-        }
-
-        .makan-group {
-            background-color: green;
-        }
-
-        .tidur-group {
-            background-color: blue;
-        }
-
-        .tamu-group {
-            background-color: brown;
-        }
-    </style>
+    <title>Chat Widget Auto Login</title>
+    <!-- Skrip untuk mengakses Chat Widget -->
+    <script src="https://chat-api.spartez-software.com/chat-widget.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/8.0.20/jsrsasign-all-min.js"></script>
 </head>
 <body>
-    <h1>Lampu Kontrol</h1>
+    <!-- Form untuk input email dan display name -->
+    <form id="login-form">
+        <input type="email" id="email" placeholder="Email">
+        <input type="text" id="displayname" placeholder="Display Name">
+        <button type="button" id="login-button">Login</button>
+    </form>
 
-    <div class="group-container keluarga-group">
-        <div class="group-header">Ruangan Keluarga</div>
-        <div class="lampu-container">
-            <div class="lampu keluarga1" onclick="toggleLight('keluarga1')">
-                <div class="switch"></div>
-            </div>
-            <div class="lampu keluarga2" onclick="toggleLight('keluarga2')">
-                <div class="switch"></div>
-            </div>
-            <div class="lampu keluarga3" onclick="toggleLight('keluarga3')">
-                <div class="switch"></div>
-            </div>
-        </div>
-        <div class="btn-group">
-            <button onclick="toggleGroup('keluarga')">Hidupkan/Sematikan Grup Keluarga</button>
-        </div>
-    </div>
-
-    <div class="group-container makan-group">
-        <div class="group-header">Ruangan Makan</div>
-        <div class="lampu-container">
-            <div class="lampu makan1" onclick="toggleLight('makan1')">
-                <div class="switch"></div>
-            </div>
-        </div>
-        <div class="btn-group">
-            <button onclick="toggleGroup('makan')">Hidupkan/Sematikan Grup Makan</button>
-        </div>
-    </div>
-
-    <div class="group-container tidur-group">
-        <div class="group-header">Ruangan Tidur</div>
-        <div class="lampu-container">
-            <div class="lampu tidur1" onclick="toggleLight('tidur1')">
-                <div class="switch"></div>
-            </div>
-            <div class="lampu tidur2" onclick="toggleLight('tidur2')">
-                <div class="switch"></div>
-            </div>
-        </div>
-        <div class="btn-group">
-            <button onclick="toggleGroup('tidur')">Hidupkan/Sematikan Grup Tidur</button>
-        </div>
-    </div>
-
-    <div class="group-container tamu-group">
-        <div class="group-header">Ruangan Tamu</div>
-        <div class="lampu-container">
-            <div class="lampu tamu1" onclick="toggleLight('tamu1')">
-            <div class="switch"></div>
-            </div>
-            <div class="lampu tamu2" onclick="toggleLight('tamu2')">
-            <div class="switch"></div>
-            </div>
-            <div class="lampu tamu3" onclick="toggleLight('tamu3')">
-            <div class="switch"></div>
-            </div>
-            <div class="lampu tamu4" onclick="toggleLight('tamu4')">
-            <div class="switch"></div>
-            </div>
-        </div>
-        <div class="btn-group">
-            <button onclick="toggleGroup('tamu')">Hidupkan/Sematikan Grup Tamu</button>
-        </div>
-    </div>
+    <!-- Chat Widget -->
+    <chat-widget
+        id="chat-widget"
+        jira-id="0e23c211-3176-3a27-b075-144768933807"
+        service-desk-id="9">
+    </chat-widget>
 
     <script>
-        const lampuStatus = {
-            keluarga1: false,
-            keluarga2: false,
-            keluarga3: false,
-            makan1: false,
-            tidur1: false,
-            tidur2: false,
-            tamu1: false,
-            tamu2: false,
-            tamu3: false,
-            tamu4: false,
-        };
-
-        function toggleLight(id) {
-            lampuStatus[id] = !lampuStatus[id];
-            const lampu = document.querySelector(`.${id}`);
-            lampu.classList.toggle("on", lampuStatus[id]);
+        // Fungsi untuk mengambil nilai dari input email dan display name
+        function getUserInfo() {
+            const email = document.getElementById('email').value;
+            const displayName = document.getElementById('displayname').value;
+            return { email, displayName };
         }
 
-        function toggleGroup(group) {
-            const groupIds = {
-                keluarga: ["keluarga1", "keluarga2", "keluarga3"],
-                makan: ["makan1"],
-                tidur: ["tidur1", "tidur2"],
-                tamu: ["tamu1", "tamu2", "tamu3", "tamu4"],
+        // Fungsi untuk melakukan login
+        async function performLogin() {
+            const { email, displayName } = getUserInfo();
+            const header = {
+                alg: 'HS256',
+                typ: 'JWT'
             };
+            const payload = {
+                email,
+                displayName,
+                iat: Math.floor(Date.now() / 1000), // Waktu saat ini dalam format Unix timestamp (detik)
+                exp: Math.floor(Date.now() / 1000) + 60 * 5 // Token berlaku selama 5 menit
+            };
+            const sharedSecret = "MTkxLDE5NywxOTQsMTg4LDIyMSw5MiwyMjcsOTgsOSwxMDMsNTAsMTkxLDE0MCw5NCwyMTQsMTMx"; // Ganti dengan secret key Anda
+            const token = KJUR.jws.JWS.sign( // Contoh penggunaan library jsrsasign
+                "HS256",
+                JSON.stringify(header),
+                JSON.stringify(payload),
+                sharedSecret
+            );
 
-            const groupStatus = groupIds[group].every(id => lampuStatus[id]);
-            groupIds[group].forEach(id => {
-                lampuStatus[id] = !groupStatus;
-                const lampu = document.querySelector(`.${id}`);
-                lampu.classList.toggle("on", lampuStatus[id]);
-            });
+            console.log(token, 'token')
+
+            // Mendapatkan referensi ke widget chat
+            const chatWidget = document.getElementById('chat-widget');
+            
+            // Check if user is in a correct domain before logging in
+            if (email && displayName) {
+                await chatWidget.loginWithToken(token); // Melakukan login dengan token yang dibuat
+            } else {
+                console.log('User is not in the correct domain.');
+            }
         }
+
+        // Ketika tombol login diklik, panggil fungsi performLogin
+        document.getElementById('login-button').addEventListener('click', performLogin);
     </script>
-    <script src="https://chat-api.spartez-software.com/chat-widget.js" defer></script>
-    <chat-widget
-        jira-id="0e23c211-3176-3a27-b075-144768933807"
-        service-desk-id="9"></chat-widget>             
 </body>
 </html>
